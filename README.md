@@ -1,4 +1,4 @@
-# Side_project_Electron_microscopy_segmentation
+# Side Project: Electron Microscopy Segmentation Using Autoencoder and Convolutional Neural Network
 
 ## Overview
 The goal of this peoject is to segment the targeted objects from the pictures under the electron microscopy.
