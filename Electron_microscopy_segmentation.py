@@ -223,6 +223,7 @@ from sklearn.metrics import f1_score
 ## choose the best threshold based on the validation set on f1 score
 th_list = np.arange(0, 1, 0.05)
 f1_list = []
+# th_best = 0.55
 th_best = 0
 f1_score_best = 0
 
@@ -244,12 +245,24 @@ print('Best f1 socre:', f1_score_best)
 ## reference: http://machinelearningmastery.com/save-load-keras-deep-learning-models/
 # serialize model to YAML
 model_yaml = autoencoder.to_yaml()
-with open("D:/Project/Side_project_Electron_microspy_segmentation/model.yaml", "w") as yaml_file:
+with open("D:/Project/Side_project_Electron_microscopy_segmentation/model.yaml", "w") as yaml_file:
     yaml_file.write(model_yaml)
 # serialize weights to HDF5
-autoencoder.save_weights("D:/Project/Side_project_Electron_microspy_segmentation/model.h5")
+autoencoder.save_weights("D:/Project/Side_project_Electron_microscopy_segmentation/model.h5")
 print("Saved model to disk")
 
+### load json and create model
+from keras.models import model_from_yaml
+yaml_file = open('D:/Project/Side_project_Electron_microscopy_segmentation/model.yaml', 'r')
+loaded_model_yaml = yaml_file.read()
+yaml_file.close()
+loaded_model = model_from_yaml(loaded_model_yaml)
+# load weights into new model
+loaded_model.load_weights("D:/Project/Side_project_Electron_microscopy_segmentation/model.h5")
+print("Loaded model from disk")
+
+loaded_model.compile(optimizer='adadelta', loss='binary_crossentropy')
+autoencoder = loaded_model
 
 ### Evaluate on the test dataset
 ### Load the data
@@ -280,7 +293,7 @@ for i in range(len(y_pred)):
                                   y_pred[i].flatten()>th_best))
     r_list.append(recall_score(test_img_truth[i].flatten(),
                                   y_pred[i].flatten()>th_best))
-    f_list.append(recall_score(test_img_truth[i].flatten(),
+    f_list.append(f1_score(test_img_truth[i].flatten(),
                                   y_pred[i].flatten()>th_best))
 
 print('Results on test dataset:')
