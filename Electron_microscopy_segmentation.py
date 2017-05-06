@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr  5 01:32:38 2017
-
-@author: user
+Segment the interesting parts under the electron microscopy picture
 """
 
 ### Load required packages
@@ -23,39 +21,47 @@ pic = 100
 fig = plt.figure(figsize=(15, 4))
 ax_1 = fig.add_subplot(1, 3, 1)
 plt.imshow(train_img[pic], cmap='gray')
+plt.grid(None)
 
 ax_2 = fig.add_subplot(1, 3, 2)
 plt.hist(train_img[pic].flatten())
 
 ax_3 = fig.add_subplot(1, 3, 3)
 plt.imshow(train_img_truth[pic], cmap='gray')
+plt.grid(None)
 
 ### show the segmentation 
 fig = plt.figure(figsize=(12, 10))
 ax_1 = fig.add_subplot(2, 2, 1)
 plt.imshow(train_img[pic], cmap='gray')
+plt.grid(None)
 ax_2 = fig.add_subplot(2, 2, 2)
 plt.hist(train_img[pic].flatten())
 
+
 ax_3 = fig.add_subplot(2, 2, 3)
 plt.imshow(train_img_truth[pic]*train_img[pic], cmap='gray')
+plt.grid(None)
 ax_4 = fig.add_subplot(2, 2, 4)
 #plt.hist((train_img_truth[pic]*train_img[pic]).flatten())
 plt.hist((train_img[pic][train_img_truth[pic]>0]))
 
 
 ### Using the threshold from histogram to segment
-minimum = (train_img[pic][train_img_truth[pic]>0]).min()
-maximum = (train_img[pic][train_img_truth[pic]>0]).max()
+minimum = (train_img[pic]*[train_img_truth[pic]>0]).min()
+maximum = (train_img[pic]*[train_img_truth[pic]>0]).max()
 fig = plt.figure(figsize=(15, 4))
 ax_1 = fig.add_subplot(1, 3, 1)
 plt.imshow(train_img[pic], cmap='gray')
+plt.grid(None)
 
 ax_2 = fig.add_subplot(1, 3, 2)
 plt.imshow((train_img[pic]>minimum)&(train_img[pic]<maximum), cmap='gray')
+plt.grid(None)
 
 ax_3 = fig.add_subplot(1, 3, 3)
 plt.imshow(train_img_truth[pic]>0, cmap='gray')
+plt.grid(None)
 # loks not good enough...
 
 ### Evaluate the sgementation (on the benchmark segmentation)
@@ -91,7 +97,8 @@ print(score_tab)
 from sklearn.metrics import classification_report
 print(classification_report(y, y_pred))
 # the precision is awful
-
+plt.imshow(((train_img[pic]>=minimum)&(train_img[pic]<=maximum))*1)
+plt.imshow(train_img_truth[pic])
 
 ### gaussian thresholding
 from skimage.filters import gaussian
@@ -101,6 +108,7 @@ plt.imshow(gaussian(train_img[1], sigma=4))
 
 ax_2 = fig.add_subplot(1, 2, 2)
 plt.imshow(train_img[1])
+
 
 ### transform the images using gaussian thresholding
 train_img = train_img/255
@@ -136,6 +144,7 @@ from keras.models import Model
 from keras import backend as K
 from keras.callbacks import TensorBoard
 
+""" Original neural structure
 input_img = Input(shape=(768, 1024, 1))
 x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
 x = MaxPooling2D((2, 2), padding='same')(x)
@@ -153,7 +162,29 @@ x = UpSampling2D((2, 2))(x)
 x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
 x = UpSampling2D((2, 2))(x)
 decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
+"""
 
+input_img = Input(shape=(768, 1024, 1))
+x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
+x = MaxPooling2D((2, 2), padding='same')(x)
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+x = MaxPooling2D((2, 2), padding='same')(x)
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+x = MaxPooling2D((2, 2), padding='same')(x)
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+encoded = MaxPooling2D((2, 2), padding='same')(x)
+
+# at this moment, the shape of the image is (8, 48, 64)
+
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
+x = UpSampling2D((2, 2))(x)
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+x = UpSampling2D((2, 2))(x)
+x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+x = UpSampling2D((2, 2))(x)
+x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+x = UpSampling2D((2, 2))(x)
+decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = Model(input_img, decoded)
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
@@ -164,7 +195,7 @@ autoencoder.fit(pic_x_tr, pic_y_tr,
                 shuffle=True,
                 validation_data=(pic_x_test, pic_y_test),
                 callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
-
+# it takes me around 100 mins to train the model
 
 y_tr_pred = autoencoder.predict(pic_x_tr, batch_size=3)
 y_test_pred = autoencoder.predict(pic_x_test, batch_size=3)
@@ -223,7 +254,8 @@ from sklearn.metrics import f1_score
 ## choose the best threshold based on the validation set on f1 score
 th_list = np.arange(0, 1, 0.05)
 f1_list = []
-# th_best = 0.55
+# th_best = 0.55 (original)
+# th_best = 0.75 (2017/05/06)
 th_best = 0
 f1_score_best = 0
 
@@ -241,6 +273,7 @@ for th in th_list:
 print('Best threshold:', th_best)
 print('Best f1 socre:', f1_score_best)
 
+""" old model
 ### Save the model
 ## reference: http://machinelearningmastery.com/save-load-keras-deep-learning-models/
 # serialize model to YAML
@@ -263,6 +296,34 @@ print("Loaded model from disk")
 
 loaded_model.compile(optimizer='adadelta', loss='binary_crossentropy')
 autoencoder = loaded_model
+"""
+
+### Save the model (2017/05/06)
+## reference: http://machinelearningmastery.com/save-load-keras-deep-learning-models/
+# serialize model to YAML
+model_yaml = autoencoder.to_yaml()
+with open("D:/Project/Side_project_Electron_microscopy_segmentation/model_4layers.yaml", "w") as yaml_file:
+    yaml_file.write(model_yaml)
+# serialize weights to HDF5
+autoencoder.save_weights("D:/Project/Side_project_Electron_microscopy_segmentation/model_4layers.h5")
+print("Saved model to disk")
+
+### load json and create model
+from keras.models import model_from_yaml
+yaml_file = open('D:/Project/Side_project_Electron_microscopy_segmentation/model_4layers.yaml', 'r')
+loaded_model_yaml = yaml_file.read()
+yaml_file.close()
+loaded_model = model_from_yaml(loaded_model_yaml)
+# load weights into new model
+loaded_model.load_weights("D:/Project/Side_project_Electron_microscopy_segmentation/model_4layers.h5")
+print("Loaded model from disk")
+
+loaded_model.compile(optimizer='adadelta', loss='binary_crossentropy')
+autoencoder = loaded_model
+
+### Show the model
+from keras_sequential_ascii import sequential_model_to_ascii_printout
+sequential_model_to_ascii_printout(autoencoder)
 
 ### Evaluate on the test dataset
 ### Load the data
