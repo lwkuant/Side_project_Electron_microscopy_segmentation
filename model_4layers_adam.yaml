@@ -2,16 +2,16 @@ backend: tensorflow
 class_name: Model
 config:
   input_layers:
-  - [input_4, 0, 0]
+  - [input_2, 0, 0]
   layers:
   - class_name: InputLayer
     config:
       batch_input_shape: !!python/tuple [null, 768, 1024, 1]
       dtype: float32
-      name: input_4
+      name: input_2
       sparse: false
     inbound_nodes: []
-    name: input_4
+    name: input_2
   - class_name: Conv2D
     config:
       activation: relu
@@ -30,31 +30,31 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_19
+      name: conv2d_1
       padding: same
       strides: &id003 !!python/tuple [1, 1]
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - input_4
+    - - - input_2
         - 0
         - 0
         - {}
-    name: conv2d_19
+    name: conv2d_1
   - class_name: MaxPooling2D
     config:
       data_format: channels_last
-      name: max_pooling2d_9
+      name: max_pooling2d_1
       padding: same
       pool_size: &id001 !!python/tuple [2, 2]
       strides: *id001
       trainable: true
     inbound_nodes:
-    - - - conv2d_19
+    - - - conv2d_1
         - 0
         - 0
         - {}
-    name: max_pooling2d_9
+    name: max_pooling2d_1
   - class_name: Conv2D
     config:
       activation: relu
@@ -73,31 +73,31 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_20
+      name: conv2d_2
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - max_pooling2d_9
+    - - - max_pooling2d_1
         - 0
         - 0
         - {}
-    name: conv2d_20
+    name: conv2d_2
   - class_name: MaxPooling2D
     config:
       data_format: channels_last
-      name: max_pooling2d_10
+      name: max_pooling2d_2
       padding: same
       pool_size: &id004 !!python/tuple [2, 2]
       strides: *id004
       trainable: true
     inbound_nodes:
-    - - - conv2d_20
+    - - - conv2d_2
         - 0
         - 0
         - {}
-    name: max_pooling2d_10
+    name: max_pooling2d_2
   - class_name: Conv2D
     config:
       activation: relu
@@ -116,31 +116,31 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_21
+      name: conv2d_3
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - max_pooling2d_10
+    - - - max_pooling2d_2
         - 0
         - 0
         - {}
-    name: conv2d_21
+    name: conv2d_3
   - class_name: MaxPooling2D
     config:
       data_format: channels_last
-      name: max_pooling2d_11
+      name: max_pooling2d_3
       padding: same
       pool_size: &id005 !!python/tuple [2, 2]
       strides: *id005
       trainable: true
     inbound_nodes:
-    - - - conv2d_21
+    - - - conv2d_3
         - 0
         - 0
         - {}
-    name: max_pooling2d_11
+    name: max_pooling2d_3
   - class_name: Conv2D
     config:
       activation: relu
@@ -159,31 +159,31 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_22
+      name: conv2d_4
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - max_pooling2d_11
+    - - - max_pooling2d_3
         - 0
         - 0
         - {}
-    name: conv2d_22
+    name: conv2d_4
   - class_name: MaxPooling2D
     config:
       data_format: channels_last
-      name: max_pooling2d_12
+      name: max_pooling2d_4
       padding: same
       pool_size: &id006 !!python/tuple [2, 2]
       strides: *id006
       trainable: true
     inbound_nodes:
-    - - - conv2d_22
+    - - - conv2d_4
         - 0
         - 0
         - {}
-    name: max_pooling2d_12
+    name: max_pooling2d_4
   - class_name: Conv2D
     config:
       activation: relu
@@ -202,29 +202,29 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_23
+      name: conv2d_5
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - max_pooling2d_12
+    - - - max_pooling2d_4
         - 0
         - 0
         - {}
-    name: conv2d_23
+    name: conv2d_5
   - class_name: UpSampling2D
     config:
       data_format: channels_last
-      name: up_sampling2d_9
+      name: up_sampling2d_1
       size: !!python/tuple [2, 2]
       trainable: true
     inbound_nodes:
-    - - - conv2d_23
+    - - - conv2d_5
         - 0
         - 0
         - {}
-    name: up_sampling2d_9
+    name: up_sampling2d_1
   - class_name: Conv2D
     config:
       activation: relu
@@ -243,29 +243,29 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_24
+      name: conv2d_6
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - up_sampling2d_9
+    - - - up_sampling2d_1
         - 0
         - 0
         - {}
-    name: conv2d_24
+    name: conv2d_6
   - class_name: UpSampling2D
     config:
       data_format: channels_last
-      name: up_sampling2d_10
+      name: up_sampling2d_2
       size: !!python/tuple [2, 2]
       trainable: true
     inbound_nodes:
-    - - - conv2d_24
+    - - - conv2d_6
         - 0
         - 0
         - {}
-    name: up_sampling2d_10
+    name: up_sampling2d_2
   - class_name: Conv2D
     config:
       activation: relu
@@ -284,29 +284,29 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_25
+      name: conv2d_7
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - up_sampling2d_10
+    - - - up_sampling2d_2
         - 0
         - 0
         - {}
-    name: conv2d_25
+    name: conv2d_7
   - class_name: UpSampling2D
     config:
       data_format: channels_last
-      name: up_sampling2d_11
+      name: up_sampling2d_3
       size: !!python/tuple [2, 2]
       trainable: true
     inbound_nodes:
-    - - - conv2d_25
+    - - - conv2d_7
         - 0
         - 0
         - {}
-    name: up_sampling2d_11
+    name: up_sampling2d_3
   - class_name: Conv2D
     config:
       activation: relu
@@ -325,29 +325,29 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_26
+      name: conv2d_8
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - up_sampling2d_11
+    - - - up_sampling2d_3
         - 0
         - 0
         - {}
-    name: conv2d_26
+    name: conv2d_8
   - class_name: UpSampling2D
     config:
       data_format: channels_last
-      name: up_sampling2d_12
+      name: up_sampling2d_4
       size: !!python/tuple [2, 2]
       trainable: true
     inbound_nodes:
-    - - - conv2d_26
+    - - - conv2d_8
         - 0
         - 0
         - {}
-    name: up_sampling2d_12
+    name: up_sampling2d_4
   - class_name: Conv2D
     config:
       activation: sigmoid
@@ -366,18 +366,18 @@ config:
         config: {distribution: uniform, mode: fan_avg, scale: 1.0, seed: null}
       kernel_regularizer: null
       kernel_size: !!python/tuple [3, 3]
-      name: conv2d_27
+      name: conv2d_9
       padding: same
       strides: *id003
       trainable: true
       use_bias: true
     inbound_nodes:
-    - - - up_sampling2d_12
+    - - - up_sampling2d_4
         - 0
         - 0
         - {}
-    name: conv2d_27
-  name: model_3
+    name: conv2d_9
+  name: model_2
   output_layers:
-  - [conv2d_27, 0, 0]
+  - [conv2d_9, 0, 0]
 keras_version: 2.1.2
